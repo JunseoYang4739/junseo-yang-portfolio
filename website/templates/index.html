@@ -1,0 +1,224 @@
+{% extends "layout.html" %}
+
+{% block title %}Home{% endblock %}
+
+{% block content %}
+<section class="hero">
+    <div class="hero-content">
+        <h1>Hello, I'm <span class="highlight">Junseo Yang</span></h1>
+        <h2>Software Developer</h2>
+        <p>I build modern web applications and solve complex problems with clean, efficient code.</p>
+        <div class="cta-buttons">
+            <a href="{{ url_for('main.projects') }}" class="btn primary-btn">View My Work</a>
+            <a href="{{ url_for('main.contact') }}" class="btn secondary-btn">Contact Me</a>
+        </div>
+    </div>
+</section>
+
+<section class="projects-section">
+    <h2>Featured Projects</h2>
+    <p class="section-description">Here are some of my recent projects. Check out the projects page for more.</p>
+    
+    <div class="project-cards">
+        {% if featured_projects %}
+            {% for project in featured_projects %}
+                <div class="project-card">
+                    <div class="project-image">
+                        {% if project.image %}
+                            <img src="{{ url_for('static', filename=project.image) }}" alt="{{ project.title }}">
+                        {% else %}
+                            <img src="{{ url_for('static', filename='images/placeholder.jpg') }}" alt="{{ project.title }}">
+                        {% endif %}
+                    </div>
+                    <div class="project-info">
+                        <h3>{{ project.title }}</h3>
+                        <p>{{ project.description }}</p>
+                        <div class="project-tech">
+                            {% for tech in project.technologies %}
+                                <span>{{ tech }}</span>
+                            {% endfor %}
+                        </div>
+                        <div class="project-links">
+                            {% if project.live_link %}
+                                <a href="{{ project.live_link }}" class="btn small-btn" target="_blank">View Project</a>
+                            {% endif %}
+                            {% if project.github_link %}
+                                <a href="{{ project.github_link }}" class="github-link" target="_blank"><i class="fab fa-github"></i></a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <div class="project-card">
+                <div class="project-image">
+                    <img src="{{ url_for('static', filename='images/placeholder.jpg') }}" alt="Project 1">
+                </div>
+                <div class="project-info">
+                    <h3>No Projects Yet</h3>
+                    <p>Projects will appear here once added through the admin panel.</p>
+                    <div class="project-tech">
+                        <span>Example</span>
+                        <span>Tech</span>
+                    </div>
+                    <div class="project-links">
+                        <a href="#" class="btn small-btn">View Project</a>
+                        <a href="#" class="github-link"><i class="fab fa-github"></i></a>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+    
+    <div class="view-all">
+        <a href="{{ url_for('main.projects') }}" class="btn secondary-btn">View All Projects</a>
+    </div>
+</section>
+
+<section class="projects-section in-progress-section">
+    <h2>In Progress</h2>
+    <p class="section-description">Projects I'm currently working on. Stay tuned for updates!</p>
+    
+    <div class="project-cards">
+        {% if in_progress_projects %}
+            {% for project in in_progress_projects[:3] %}
+                <div class="project-card">
+                    <div class="project-image" style="position: relative;">
+                        {% if project.image %}
+                            <img src="{{ url_for('static', filename=project.image) }}" alt="{{ project.title }}">
+                        {% else %}
+                            <img src="{{ url_for('static', filename='images/placeholder.jpg') }}" alt="{{ project.title }}">
+                        {% endif %}
+                        <span class="in-progress-badge">In Progress</span>
+                    </div>
+                    <div class="project-info">
+                        <h3>{{ project.title }}</h3>
+                        <p>{{ project.description }}</p>
+                        <div class="project-tech">
+                            {% for tech in project.technologies %}
+                                <span>{{ tech }}</span>
+                            {% endfor %}
+                        </div>
+                        <div class="project-links">
+                            {% if project.github_link %}
+                                <a href="{{ project.github_link }}" class="github-link" target="_blank"><i class="fab fa-github"></i></a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <div class="project-card">
+                <div class="project-image" style="position: relative;">
+                    <img src="{{ url_for('static', filename='images/placeholder.jpg') }}" alt="In Progress Project">
+                    <span class="in-progress-badge">In Progress</span>
+                </div>
+                <div class="project-info">
+                    <h3>No In-Progress Projects</h3>
+                    <p>In-progress projects will appear here once added through the admin panel.</p>
+                    <div class="project-tech">
+                        <span>Example</span>
+                        <span>Tech</span>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+    
+    {% if in_progress_projects and in_progress_projects|length > 3 %}
+        <div class="view-all">
+            <a href="{{ url_for('main.projects') }}" class="btn secondary-btn">View All In-Progress Projects</a>
+        </div>
+    {% endif %}
+</section>
+
+<section class="skills">
+    <h2>Skills & Technologies</h2>
+    <div class="skills-container">
+        {% if skills %}
+            {% for category in skills %}
+                <div class="skill-category">
+                    <h3>{{ category.name }}</h3>
+                    {% for skill in category.skills %}
+                        <div class="skill-item">
+                            <div class="skill-name">
+                                <span>{{ skill.name }}</span>
+                                <span>{{ skill.proficiency }}%</span>
+                            </div>
+                            <div class="skill-bar">
+                                <div class="skill-progress" style="width: {{ skill.proficiency }}%"></div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endfor %}
+        {% else %}
+            <div class="skill-category">
+                <h3>Frontend</h3>
+                <div class="skill-item">
+                    <div class="skill-name">
+                        <span>HTML/CSS</span>
+                        <span>90%</span>
+                    </div>
+                    <div class="skill-bar">
+                        <div class="skill-progress" style="width: 90%"></div>
+                    </div>
+                </div>
+                <div class="skill-item">
+                    <div class="skill-name">
+                        <span>JavaScript</span>
+                        <span>85%</span>
+                    </div>
+                    <div class="skill-bar">
+                        <div class="skill-progress" style="width: 85%"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="skill-category">
+                <h3>Backend</h3>
+                <div class="skill-item">
+                    <div class="skill-name">
+                        <span>Python</span>
+                        <span>95%</span>
+                    </div>
+                    <div class="skill-bar">
+                        <div class="skill-progress" style="width: 95%"></div>
+                    </div>
+                </div>
+                <div class="skill-item">
+                    <div class="skill-name">
+                        <span>Flask</span>
+                        <span>80%</span>
+                    </div>
+                    <div class="skill-bar">
+                        <div class="skill-progress" style="width: 80%"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="skill-category">
+                <h3>Other</h3>
+                <div class="skill-item">
+                    <div class="skill-name">
+                        <span>Git</span>
+                        <span>85%</span>
+                    </div>
+                    <div class="skill-bar">
+                        <div class="skill-progress" style="width: 85%"></div>
+                    </div>
+                </div>
+                <div class="skill-item">
+                    <div class="skill-name">
+                        <span>Docker</span>
+                        <span>70%</span>
+                    </div>
+                    <div class="skill-bar">
+                        <div class="skill-progress" style="width: 70%"></div>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

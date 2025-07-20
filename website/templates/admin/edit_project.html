@@ -1,0 +1,86 @@
+{% extends "admin/layout.html" %}
+
+{% block title %}Edit Project{% endblock %}
+
+{% block content %}
+<div class="admin-header">
+    <h1>Edit Project</h1>
+    <a href="{{ url_for('admin.manage_projects') }}" class="admin-btn">Back to Projects</a>
+</div>
+
+<div class="admin-card">
+    <form action="{{ url_for('admin.edit_project', project_id=project.id) }}" method="POST" enctype="multipart/form-data">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        
+        <div class="admin-form-group">
+            <label for="project_type">Project Type</label>
+            <select id="project_type" name="project_type" required>
+                <option value="featured" {% if project_type == 'featured' %}selected{% endif %}>Featured Project</option>
+                <option value="in_progress" {% if project_type == 'in_progress' %}selected{% endif %}>In Progress Project</option>
+            </select>
+        </div>
+        
+        <div class="admin-form-group">
+            <label for="title">Project Title</label>
+            <input type="text" id="title" name="title" value="{{ project.title }}" required>
+        </div>
+        
+        <div class="admin-form-group">
+            <label for="description">Description</label>
+            <textarea id="description" name="description" rows="5" required>{{ project.description }}</textarea>
+        </div>
+        
+        <div class="admin-form-group">
+            <label for="technologies">Technologies (comma separated)</label>
+            <input type="text" id="technologies" name="technologies" value="{{ project.technologies|join(', ') }}">
+        </div>
+        
+        <div class="admin-form-group">
+            <label for="github_link">GitHub Link</label>
+            <input type="url" id="github_link" name="github_link" value="{{ project.github_link }}">
+        </div>
+        
+        <div class="admin-form-group">
+            <label for="live_link">Live Project Link</label>
+            <input type="url" id="live_link" name="live_link" value="{{ project.live_link }}">
+        </div>
+        
+        <div class="admin-form-group">
+            <label for="image">Project Image</label>
+            <input type="file" id="image" name="image" accept="image/*">
+            <div class="image-preview-container">
+                {% if project.image %}
+                    <img id="imagePreview" src="{{ url_for('static', filename=project.image) }}" alt="Current Image" style="max-width: 100%; margin-top: 10px;">
+                    <p class="image-note">Current image will be kept unless you select a new one.</p>
+                {% else %}
+                    <img id="imagePreview" src="#" alt="Image Preview" style="display: none; max-width: 100%; margin-top: 10px;">
+                    <p class="image-note">No image currently set.</p>
+                {% endif %}
+            </div>
+        </div>
+        
+        <button type="submit" class="admin-btn">Update Project</button>
+    </form>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const imageInput = document.getElementById('image');
+        const imagePreview = document.getElementById('imagePreview');
+        
+        imageInput.addEventListener('change', function() {
+            const file = this.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    imagePreview.src = e.target.result;
+                    imagePreview.style.display = 'block';
+                }
+                reader.readAsDataURL(file);
+            }
+        });
+    });
+</script>
+{% endblock %}
