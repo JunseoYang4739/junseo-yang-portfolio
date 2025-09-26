@@ -1,0 +1,30 @@
+{% extends "layout.html" %}
+
+{% block title %}Home | Junseo Yang Portfolio{% endblock %}
+
+{% block content %}
+    <section>
+        <h2>Welcome to My Portfolio</h2>
+        <p>Hello, I'm Junseo Yang. This is my personal portfolio website where I showcase my projects and skills.</p>
+    </section>
+    
+    <section>
+        <h2>Featured Projects</h2>
+        <ul>
+            <li>Project 1</li>
+            <li>Project 2</li>
+            <li>Project 3</li>
+        </ul>
+        <p><a href="{{ url_for('views.home') }}">View all projects</a></p>
+    </section>
+    
+    <section>
+        <h2>Skills</h2>
+        <ul>
+            <li>Python</li>
+            <li>Flask</li>
+            <li>HTML/CSS</li>
+            <li>JavaScript</li>
+        </ul>
+    </section>
+{% endblock %}
