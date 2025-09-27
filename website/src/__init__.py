@@ -11,10 +11,10 @@ def create_app():
     csrf = CSRFProtect(app)
     
     # Register blueprints
-    from .routes import main
-    from .admin_routes import admin
-    app.register_blueprint(main)
-    app.register_blueprint(admin, url_prefix='/admin')
+    from .views import views
+    from .admin_views import admin_views
+    app.register_blueprint(views)
+    app.register_blueprint(admin_views, url_prefix='/admin')
     
     # Make dark mode preference available to all templates
     @app.context_processor

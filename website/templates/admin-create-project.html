@@ -1,0 +1,36 @@
+{% extends "layout.html" %}
+
+{% block title %}Create Project{% endblock %}
+
+{% block content %}
+
+<h3>Create New Project</h3>
+<form method="POST" class="mb-5">
+    <div class="mb-3">
+    <label class="form-label">Title</label>
+    <input type="text" class="form-control" name="title" required>
+    </div>
+    <div class="mb-3">
+    <label class="form-label">Description</label>
+    <textarea class="form-control" name="description" rows="3" required></textarea>
+    </div>
+    <div class="mb-3">
+    <label class="form-label">Project Files</label>
+    <input type="url" class="form-control" name="files_url">
+    </div>
+    <div class="mb-3">
+    <label class="form-label">Live URL</label>
+    <input type="url" class="form-control" name="live_url">
+    </div>
+    <div class="mb-3">
+    <label class="form-label">Status</label>
+    <select class="form-select" name="status" required>
+        <option value="Planned">Planned</option>
+        <option value="In Progress">In Progress</option>
+        <option value="Completed">Completed</option>
+    </select>
+    </div>
+    <button type="submit" class="btn btn-primary">Create Project</button>
+</form>
+
+{% endblock %}

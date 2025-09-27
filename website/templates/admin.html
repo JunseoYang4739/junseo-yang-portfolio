@@ -1,15 +1,15 @@
-{% extends layout.html %}
+{% extends "layout.html" %}
 
 {% block title %}Admin | Junseo Yang Portfolio{% endblock %}
 
 {% block content %}
     <section>
-        <h2>Admin Dashboard</h2>
-        <p>Welcome to the admin dashboard. Here you can manage your portfolio content.</p>
+        <h2>Admin Panel</h2>
+        <p>Welcome to the admin panel. Here you can manage your projects, posts, and skills.</p>
         <ul>
             <li><a href="/admin/projects">Manage Projects</a></li>
-            <li><a href="/admin/posts">Manage Posts</a></li>
             <li><a href="/admin/skills">Manage Skills</a></li>
+            <!-- To keep it expandable -->
         </ul>
     </section>
 {% endblock %}
