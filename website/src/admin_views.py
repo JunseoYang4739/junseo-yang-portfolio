@@ -28,25 +28,25 @@ def admin_projects_list():
 
 @admin_views.route("/projects/create", methods=['POST', 'GET'])
 @ip_restricted
-def admin_projects():
+def create_project():
     if request.method == 'POST':
         title = request.form.get('title')
         description = request.form.get('description')
-        github_url = request.form.get('github_url')
+        files_url = request.form.get('files_url')
         live_url = request.form.get('live_url')
         status = request.form.get('status')
 
         new_project = Project(
             title=title,
             description=description,
-            github_url=github_url,
+            files_url=files_url,
             live_url=live_url,
             status=status
         )
 
         db.session.add(new_project)
         db.session.commit()
-        return redirect(url_for('admin_views.admin_projects'))
+        return redirect(url_for('admin_views.admin_projects_list'))
     return render_template("admin-create-project.html")
 
 
@@ -58,7 +58,7 @@ def edit_project(project_id):
     if request.method == 'POST':
         project.title = request.form.get('title') if request.form.get('title') else project.title
         project.description = request.form.get('description') if request.form.get('description') else project.description
-        project.github_url = request.form.get('github_url') if request.form.get('github_url') else project.github_url
+        project.files_url = request.form.get('files_url_url') if request.form.get('files_url') else project.files_url
         project.live_url = request.form.get('live_url') if request.form.get('live_url') else project.live_url
         project.status = request.form.get('status') if request.form.get('status') else project.status
 
@@ -66,6 +66,14 @@ def edit_project(project_id):
         return redirect(url_for('admin_views.admin_projects_list'))
 
     return render_template("admin-edit-project.html", project=project)
+
+@admin_views.route("/admin/projects/<int:project_id>/delete", methods=["POST"])
+@ip_restricted
+def delete_project(project_id):
+    project = Project.query.get_or_404(project_id)
+    db.session.delete(project)
+    db.session.commit()
+    return redirect(url_for("admin_views.admin_projects_list"))
 
 @admin_views.route("/posts")
 @ip_restricted
