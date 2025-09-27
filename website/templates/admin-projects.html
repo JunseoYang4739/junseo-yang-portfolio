@@ -8,16 +8,12 @@
 
     <h3>All Projects</h3>
     <table class="table table-striped">
-        <thead>
-            <tr>
-                <th>Title</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
         <tbody>
         {% for project in projects %}
         <tr>
-            <td>{{ project.title }}</td>
+            <td>
+                <a href="{{ url_for('admin_views.admin_open_project_posts', project_title=project.title) }}" class="btn btn-sm btn-warning">{{project.title}}</a>
+            </td>
             <td>
                 <a href="{{ url_for('admin_views.edit_project', project_id=project.id) }}" class="btn btn-sm btn-warning">Edit</a>
 

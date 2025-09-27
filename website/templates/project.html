@@ -1,22 +1,32 @@
 
-{% extends layout.html %}
+{% extends "layout.html" %}
 
 {% block title %}{{ project.title }} | Junseo Yang Portfolio{% endblock %}
 
 {% block content %}
-    <section>
-        <h2>{{ project.title }}</h2>
-        <p>{{ project.description }}</p>
-        {% if project.github_url %}
-            <p>GitHub: <a href="{{ project.github_url }}" target="_blank">{{ project.github_url }}</a></p>
-        {% endif %}
-        {% if project.live_url %}
-            <p>Live Demo: <a href="{{ project.live_url }}" target="_blank">{{ project.live_url }}</a></p>
-        {% endif %}
-        <div>
-            {% for image in project.images %}
-                <img src="{{ image.url }}" alt="Project Image" style="max-width: 100%; height: auto;"/>
-            {% endfor %}
-        </div>
-    </section>
+<section>
+    <h2>{{ project.title }}</h2>
+    <p>{{ project.description }}</p>
+    {% if project.files_url %}
+        <p>Files: <a href="{{ project.files_url }}" target="_blank">{{ project.files_url }}</a></p>
+    {% endif %}
+    {% if project.live_url %}
+        <p>Live Demo: <a href="{{ project.live_url }}" target="_blank">{{ project.live_url }}</a></p>
+    {% endif %}
+    
+    <h3>Posts</h3>
+    {% for post in project.posts %}
+    <div>
+        <h4>{{ post.title }}</h4>
+        <p>{{ post.content }}</p>
+        <small>{{ post.date }}</small>
+    </div>
+    {% endfor %}
+    
+    <div>
+        {% for image in project.images %}
+            <img src="{{ image.image_url }}" alt="Project Image" style="max-width: 100%; height: auto;"/>
+        {% endfor %}
+    </div>
+</section>
 {% endblock %}

@@ -75,8 +75,52 @@ def delete_project(project_id):
     db.session.commit()
     return redirect(url_for("admin_views.admin_projects_list"))
 
-@admin_views.route("/posts")
+@admin_views.route("/project/<string:project_title>/posts")
 @ip_restricted
-def admin_posts():
-    posts = Post.query.all()
-    return render_template("admin-posts.html", posts=posts)
+def admin_open_project_posts(project_title):
+    project = Project.query.filter_by(title=project_title).first_or_404()
+    return render_template("admin-project-posts.html", project=project)
+
+@admin_views.route("/project/<string:project_title>/posts/create", methods=['POST', 'GET'])
+@ip_restricted
+def create_post(project_title):
+    project = Project.query.filter_by(title=project_title).first_or_404()
+
+    if request.method == 'POST':
+        title = request.form.get('title')
+        content = request.form.get('content')
+
+        new_post = Post(
+            title=title,
+            content=content,
+            project_id=project.id
+        )
+
+        db.session.add(new_post)
+        db.session.commit()
+        return redirect(url_for('admin_views.admin_open_project_posts', project_title=project.title))
+    return render_template("admin-create-post.html", project=project)
+
+@admin_views.route("/project/<string:project_title>/posts/<int:post_id>/edit", methods=['POST', 'GET'])
+@ip_restricted
+def edit_post(project_title, post_id):
+    project = Project.query.filter_by(title=project_title).first_or_404()
+    post = Post.query.get_or_404(post_id)
+
+    if request.method == 'POST':
+        post.title = request.form.get('title') if request.form.get('title') else post.title
+        post.content = request.form.get('content') if request.form.get('content') else post.content
+
+        db.session.commit()
+        return redirect(url_for('admin_views.admin_open_project_posts', project_title=project.title))
+
+    return render_template("admin-edit-post.html", project=project, post=post)
+
+@admin_views.route("/project/<string:project_title>/posts/<int:post_id>/delete", methods=["POST"])
+@ip_restricted
+def delete_post(project_title, post_id):
+    project = Project.query.filter_by(title=project_title).first_or_404()
+    post = Post.query.get_or_404(post_id)
+    db.session.delete(post)
+    db.session.commit()
+    return redirect(url_for("admin_views.admin_open_project_posts", project_title=project.title))
