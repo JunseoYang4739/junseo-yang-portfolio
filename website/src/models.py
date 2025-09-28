@@ -17,9 +17,9 @@ class Project(db.Model):
     live_url = db.Column(db.String(200), nullable=True)
     status = db.Column(db.String(20), nullable=False)
 
-    posts = db.relationship('Post', backref='project', lazy=True)
+    posts = db.relationship('Post', backref='project', lazy=True, cascade='all, delete-orphan')
     skills = db.relationship('Skill', secondary=project_skills, backref='projects')
-    images = db.relationship('Image', backref='project', lazy=True)
+    images = db.relationship('Image', backref='project', lazy=True, cascade='all, delete-orphan')
 
     def __repr__(self):
         return f"<Project {self.title}>"
@@ -34,7 +34,7 @@ class Post(db.Model):
     date = db.Column(db.DateTime, nullable=False, default=datetime.datetime.utcnow)
 
     project_id = db.Column(db.Integer, db.ForeignKey('project.id'), nullable=False)
-    images = db.relationship('Image', backref='post', lazy=True)
+    images = db.relationship('Image', backref='post', lazy=True, cascade='all, delete-orphan')
 
     def __repr__(self):
         return f"<Post {self.title}>"

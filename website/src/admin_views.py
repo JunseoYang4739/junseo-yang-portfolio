@@ -1,7 +1,11 @@
 
-from flask import Blueprint, render_template, request, abort, redirect, url_for
+from flask import Blueprint, render_template, request, abort, redirect, url_for, session, current_app, flash
 from werkzeug.utils import secure_filename
 import os
+import pyotp
+import qrcode
+from io import BytesIO
+import base64
 from .models import Project, Skill, Post, Image, db
 
 admin_views = Blueprint('admin_views', __name__)
@@ -17,13 +21,66 @@ def ip_restricted(f):
     wrapper.__name__ = f.__name__
     return wrapper
 
+def requires_2fa(f):
+    def wrapper(*args, **kwargs):
+        if not session.get('admin_authenticated'):
+            return redirect(url_for('admin_views.admin_login'))
+        return f(*args, **kwargs)
+    wrapper.__name__ = f.__name__
+    return wrapper
+
+@admin_views.route("/login", methods=['GET', 'POST'])
+@ip_restricted
+def admin_login():
+    if request.method == 'POST':
+        totp_code = request.form.get('totp_code')
+        if totp_code:
+            secret = current_app.config.get('TOTP_SECRET', 'JBSWY3DPEHPK3PXP')
+            totp = pyotp.TOTP(secret)
+            if totp.verify(totp_code):
+                session['admin_authenticated'] = True
+                session.permanent = True
+                return redirect(url_for('admin_views.admin'))
+            else:
+                flash('Invalid 2FA code', 'error')
+    
+    return render_template('admin-login.html')
+
+@admin_views.route("/setup-2fa")
+@ip_restricted
+def setup_2fa():
+    secret = current_app.config.get('TOTP_SECRET', 'JBSWY3DPEHPK3PXP')
+    totp_uri = pyotp.totp.TOTP(secret).provisioning_uri(
+        name='junseoyang4739@gmail.com',
+        issuer_name='Junseo Yang Portfolio'
+    )
+    
+    # Generate QR code
+    qr = qrcode.QRCode(version=1, box_size=10, border=5)
+    qr.add_data(totp_uri)
+    qr.make(fit=True)
+    
+    img = qr.make_image(fill_color="black", back_color="white")
+    buffered = BytesIO()
+    img.save(buffered)
+    img_str = base64.b64encode(buffered.getvalue()).decode()
+    
+    return render_template('admin-2fa-setup.html', qr_code=img_str, secret=secret)
+
+@admin_views.route("/logout")
+def admin_logout():
+    session.pop('admin_authenticated', None)
+    return redirect(url_for('views.home'))
+
 @admin_views.route("/")
 @ip_restricted
+@requires_2fa
 def admin():
     return render_template("admin.html")
 
 @admin_views.route("/projects")
 @ip_restricted
+@requires_2fa
 def admin_projects_list():
     projects = Project.query.all()
     return render_template("admin-projects.html", projects=projects)
@@ -72,10 +129,26 @@ def edit_project(project_id):
 @admin_views.route("/admin/projects/<int:project_id>/delete", methods=["POST"])
 @ip_restricted
 def delete_project(project_id):
-    project = Project.query.get_or_404(project_id)
-    db.session.delete(project)
-    db.session.commit()
-    return redirect(url_for("admin_views.admin_projects_list"))
+    try:
+        project = Project.query.get_or_404(project_id)
+        
+        # Explicitly delete related images and posts (cascade should handle this, but being explicit)
+        for post in project.posts:
+            for image in post.images:
+                db.session.delete(image)
+            db.session.delete(post)
+        
+        for image in project.images:
+            db.session.delete(image)
+        
+        db.session.delete(project)
+        db.session.commit()
+        
+        return redirect(url_for("admin_views.admin_projects_list"))
+    except Exception as e:
+        db.session.rollback()
+        print(f"Error deleting project: {e}")
+        return redirect(url_for("admin_views.admin_projects_list"))
 
 @admin_views.route("/project/<string:project_title>/posts")
 @ip_restricted
@@ -121,11 +194,22 @@ def edit_post(project_title, post_id):
 @admin_views.route("/project/<string:project_title>/posts/<int:post_id>/delete", methods=["POST"])
 @ip_restricted
 def delete_post(project_title, post_id):
-    project = Project.query.filter_by(title=project_title).first_or_404()
-    post = Post.query.get_or_404(post_id)
-    db.session.delete(post)
-    db.session.commit()
-    return redirect(url_for("admin_views.admin_open_project_posts", project_title=project.title))
+    try:
+        project = Project.query.filter_by(title=project_title).first_or_404()
+        post = Post.query.get_or_404(post_id)
+        
+        # Explicitly delete related images
+        for image in post.images:
+            db.session.delete(image)
+        
+        db.session.delete(post)
+        db.session.commit()
+        
+        return redirect(url_for("admin_views.admin_open_project_posts", project_title=project.title))
+    except Exception as e:
+        db.session.rollback()
+        print(f"Error deleting post: {e}")
+        return redirect(url_for("admin_views.admin_open_project_posts", project_title=project_title))
 
 @admin_views.route("/projects/<int:project_id>/skills", methods=['GET', 'POST'])
 @ip_restricted
@@ -185,8 +269,23 @@ def manage_project_images(project_id):
             caption = request.form.get('caption')
             
             if file and file.filename:
+                # Secure filename to prevent path traversal
                 filename = secure_filename(file.filename)
-                file_path = os.path.join('website/static/images', filename)
+                
+                # Additional security: only allow image extensions
+                allowed_extensions = {'.jpg', '.jpeg', '.png', '.gif', '.webp'}
+                file_ext = os.path.splitext(filename)[1].lower()
+                
+                if file_ext not in allowed_extensions:
+                    flash('Invalid file type. Only images allowed.', 'error')
+                    return redirect(url_for('admin_views.manage_project_images', project_id=project.id))
+                
+                # Ensure uploads directory exists
+                upload_dir = os.path.join('website', 'static', 'images')
+                os.makedirs(upload_dir, exist_ok=True)
+                
+                # Save with secure path
+                file_path = os.path.join(upload_dir, filename)
                 file.save(file_path)
                 
                 image_url = f'/static/images/{filename}'
@@ -226,8 +325,23 @@ def manage_post_images(post_id):
             caption = request.form.get('caption')
             
             if file and file.filename:
+                # Secure filename to prevent path traversal
                 filename = secure_filename(file.filename)
-                file_path = os.path.join('website/static/images', filename)
+                
+                # Additional security: only allow image extensions
+                allowed_extensions = {'.jpg', '.jpeg', '.png', '.gif', '.webp'}
+                file_ext = os.path.splitext(filename)[1].lower()
+                
+                if file_ext not in allowed_extensions:
+                    flash('Invalid file type. Only images allowed.', 'error')
+                    return redirect(url_for('admin_views.manage_post_images', post_id=post.id))
+                
+                # Ensure uploads directory exists
+                upload_dir = os.path.join('website', 'static', 'images')
+                os.makedirs(upload_dir, exist_ok=True)
+                
+                # Save with secure path
+                file_path = os.path.join(upload_dir, filename)
                 file.save(file_path)
                 
                 image_url = f'/static/images/{filename}'

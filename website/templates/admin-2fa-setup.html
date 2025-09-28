@@ -1,0 +1,36 @@
+{% extends "layout.html" %}
+
+{% block title %}Setup 2FA | Admin{% endblock %}
+
+{% block content %}
+<section class="admin-section">
+    <h2>🔐 Setup Two-Factor Authentication</h2>
+    <p>Scan this QR code with Google Authenticator app:</p>
+    
+    <div class="qr-code-container">
+        <img src="data:image/png;base64,{{ qr_code }}" alt="2FA QR Code" class="qr-code">
+    </div>
+    
+    <div class="setup-instructions">
+        <h4>Setup Instructions:</h4>
+        <ol>
+            <li>Install Google Authenticator on your phone</li>
+            <li>Open the app and tap "+"</li>
+            <li>Choose "Scan QR code"</li>
+            <li>Scan the QR code above</li>
+            <li>The app will show a 6-digit code for "Junseo Yang Portfolio"</li>
+            <li>Use this code to login to the admin panel</li>
+        </ol>
+        
+        <div class="manual-entry">
+            <h4>Manual Entry (if QR doesn't work):</h4>
+            <p><strong>Account:</strong> junseoyang4739@gmail.com</p>
+            <p><strong>Secret Key:</strong> <code>{{ secret }}</code></p>
+        </div>
+    </div>
+    
+    <div class="admin-actions">
+        <a href="{{ url_for('admin_views.admin_login') }}" class="btn">Back to Login</a>
+    </div>
+</section>
+{% endblock %}

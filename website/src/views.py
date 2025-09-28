@@ -1,8 +1,13 @@
-from flask import Blueprint, render_template, request
+from flask import Blueprint, render_template, request, make_response
 from sqlalchemy import desc
 from .models import Project, Skill, Post, Image, db
 
 views = Blueprint('views', __name__)
+
+@views.route('/test-headers')
+def test_headers():
+    response = make_response("Headers test - check browser dev tools")
+    return response
 
 @views.route('/')
 def home():

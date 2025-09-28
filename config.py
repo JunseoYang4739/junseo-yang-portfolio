@@ -3,6 +3,7 @@ import os
 class Config:
     """Base configuration class."""
     SECRET_KEY = os.environ.get('SECRET_KEY') or 'dev-key-replace-in-production'
+    TOTP_SECRET = os.environ.get('TOTP_SECRET') or 'JBSWY3DPEHPK3PXP'  # Change this in production
     STATIC_FOLDER = 'static'
     TEMPLATES_FOLDER = 'templates'
 

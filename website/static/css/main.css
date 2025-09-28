@@ -665,3 +665,93 @@ footer p {
     color: #6b7280;
     font-weight: bold;
 }
+/* Admin login styles */
+.alert {
+    padding: 1rem;
+    margin: 1rem 0;
+    border-radius: 5px;
+    border: 1px solid;
+}
+
+.alert-error {
+    background: rgba(220, 38, 38, 0.1);
+    border-color: #dc2626;
+    color: #dc2626;
+}
+
+.login-info {
+    margin-top: 2rem;
+    padding: 1.5rem;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 10px;
+    border: 1px solid rgba(220, 38, 38, 0.2);
+}
+
+.login-info h4 {
+    color: #dc2626;
+    margin-bottom: 1rem;
+}
+
+.login-info p {
+    margin: 0.5rem 0;
+    color: #e5e5e5;
+}
+
+#totp_code {
+    text-align: center;
+    font-size: 1.2rem;
+    letter-spacing: 0.2em;
+    font-family: monospace;
+}
+/* 2FA Setup styles */
+.qr-code-container {
+    text-align: center;
+    margin: 2rem 0;
+    padding: 2rem;
+    background: white;
+    border-radius: 10px;
+    display: inline-block;
+}
+
+.qr-code {
+    max-width: 300px;
+    height: auto;
+    border: none;
+    box-shadow: none;
+}
+
+.setup-instructions {
+    background: rgba(0, 0, 0, 0.2);
+    padding: 2rem;
+    border-radius: 10px;
+    border: 1px solid rgba(220, 38, 38, 0.2);
+    margin: 2rem 0;
+}
+
+.setup-instructions h4 {
+    color: #dc2626;
+    margin-bottom: 1rem;
+}
+
+.setup-instructions ol {
+    color: #e5e5e5;
+    padding-left: 1.5rem;
+}
+
+.setup-instructions li {
+    margin: 0.5rem 0;
+}
+
+.manual-entry {
+    margin-top: 2rem;
+    padding-top: 1rem;
+    border-top: 1px solid rgba(220, 38, 38, 0.2);
+}
+
+.manual-entry code {
+    background: rgba(220, 38, 38, 0.1);
+    padding: 0.2rem 0.5rem;
+    border-radius: 3px;
+    font-family: monospace;
+    color: #dc2626;
+}

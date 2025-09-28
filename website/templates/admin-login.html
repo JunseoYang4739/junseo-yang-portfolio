@@ -1,0 +1,39 @@
+{% extends "layout.html" %}
+
+{% block title %}Admin Login | Junseo Yang Portfolio{% endblock %}
+
+{% block content %}
+<section class="admin-section">
+    <h2>🔐 Admin Login</h2>
+    <p>Enter your Google Authenticator code to access the admin panel.</p>
+    
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert alert-{{ category }}">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+    
+    <form method="POST" class="admin-form">
+        <div class="form-group">
+            <label for="totp_code">2FA Code</label>
+            <input type="text" id="totp_code" name="totp_code" required 
+                   placeholder="Enter 6-digit code from Google Authenticator" 
+                   maxlength="6" pattern="[0-9]{6}">
+        </div>
+        
+        <div class="admin-actions">
+            <button type="submit" class="btn">Login</button>
+            <a href="{{ url_for('admin_views.setup_2fa') }}" class="btn btn-secondary">Setup 2FA</a>
+        </div>
+    </form>
+    
+    <div class="login-info">
+        <h4>First time setup?</h4>
+        <p>1. Click "Setup 2FA" to get your QR code</p>
+        <p>2. Scan with Google Authenticator app</p>
+        <p>3. Enter the 6-digit code to login</p>
+    </div>
+</section>
+{% endblock %}
