@@ -3,15 +3,80 @@
 {% block title %}Home | Junseo Yang Portfolio{% endblock %}
 
 {% block content %}
-    <section>
-        <h2>Welcome to My Portfolio</h2>
-        <p>Hello, I'm Junseo Yang. This is my personal portfolio website where I showcase my projects and skills.</p>
-    </section>
-    <section>
-        <h2>Contact Details</h2>
-        <p>Phone Number: 0 493 731 343</p>
-        <p>Email: junseoyang4739@gmail.com</p>
-        <p>LinkedIn: <a href="https://www.linkedin.com/in/junseo-yang-680559355" target="_blank">www.linkedin.com/in/junseo-yang-680559355</a></p>
-        <p>GitHub: <a href="https://github.com/JunseoYang4739" target="_blank">github.com/JunseoYang4739</a></p>
-    </section>
+<section class="hero-section">
+    <h2>👋 Welcome to My Portfolio</h2>
+    <p class="hero-text">Hello, I'm <strong>Junseo Yang</strong>, a passionate developer creating innovative solutions and bringing ideas to life through code.</p>
+    <div class="cta-buttons">
+        <a href="{{ url_for('views.projects') }}" class="btn">🚀 View My Projects</a>
+        <a href="#contact" class="btn">📧 Get In Touch</a>
+    </div>
+</section>
+
+<section class="about-section">
+    <h2>🎯 About Me</h2>
+    <p>I'm a dedicated software developer with a passion for creating efficient, scalable, and user-friendly applications. I love exploring new technologies and turning complex problems into simple, elegant solutions.</p>
+    
+    <div class="highlights">
+        <div class="highlight-card">
+            <h3>💻 Full-Stack Development</h3>
+            <p>Building complete web applications from frontend to backend</p>
+        </div>
+        <div class="highlight-card">
+            <h3>🔧 Problem Solving</h3>
+            <p>Turning complex challenges into elegant solutions</p>
+        </div>
+        <div class="highlight-card">
+            <h3>📚 Continuous Learning</h3>
+            <p>Always exploring new technologies and best practices</p>
+        </div>
+    </div>
+</section>
+
+<section id="contact" class="contact-section">
+    <h2>📞 Let's Connect</h2>
+    <p>Ready to collaborate or have a question? I'd love to hear from you!</p>
+    
+    <div class="contact-layout">
+        <div class="contact-row">
+            <div class="contact-item">
+                <img src="{{ url_for('static', filename='images/email-icon.png') }}" alt="Email" class="contact-icon">
+                <div class="contact-info">
+                    <div class="contact-label">Email</div>
+                    <a href="mailto:junseoyang4739@gmail.com">junseoyang4739@gmail.com</a>
+                </div>
+            </div>
+            <div class="contact-item">
+                <img src="{{ url_for('static', filename='images/phone-icon.png') }}" alt="Phone" class="contact-icon">
+                <div class="contact-info">
+                    <div class="contact-label">Phone</div>
+                    <a href="tel:0493731343">0 493 731 343</a>
+                </div>
+            </div>
+            <div class="contact-item">
+                <img src="{{ url_for('static', filename='images/location-icon.png') }}" alt="Location" class="contact-icon">
+                <div class="contact-info">
+                    <div class="contact-label">Location</div>
+                    <a href="https://www.google.com/maps/place/Sydney+NSW,+Australia" target="_blank">Sydney, Australia</a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="contact-row">
+            <div class="contact-item">
+                <img src="{{ url_for('static', filename='images/linkedin-icon.png') }}" alt="LinkedIn" class="contact-icon">
+                <div class="contact-info">
+                    <div class="contact-label">LinkedIn</div>
+                    <a href="https://www.linkedin.com/in/junseo-yang-680559355" target="_blank">Connect with me</a>
+                </div>
+            </div>
+            <div class="contact-item">
+                <img src="{{ url_for('static', filename='images/github-icon.png') }}" alt="GitHub" class="contact-icon">
+                <div class="contact-info">
+                    <div class="contact-label">GitHub</div>
+                    <a href="https://github.com/JunseoYang4739" target="_blank">View my code</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
 {% endblock %}

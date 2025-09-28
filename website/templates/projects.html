@@ -5,26 +5,49 @@
 
 {% block content %}
 <section>
-    <h2>My Projects</h2>
+    <h2>🚀 My Projects</h2>
+    <p>Here are some of the exciting projects I've been working on:</p>
+    
     {% for project in projects %}
-    <div>
+    <div class="project-card">
         <h3><a href="{{ url_for('views.project', project=project.title) }}">{{ project.title }}</a></h3>
         <p>{{ project.description }}</p>
-        <p>Status: {{ project.status }}</p>
-        <p>Project ID: {{ project.id }}, Images: {{ project.images|length }}</p>
+        <p><strong>Status:</strong> <span class="status-{{ project.status.lower().replace(' ', '-') }}">{{ project.status }}</span></p>
         
         {% if project.images %}
-            {% for image in project.images %}
-            <div>
-                <img src="{{ image.image_url }}" alt="{{ image.caption }}" style="max-width: 200px; border: 1px solid green;">
-                {% if image.caption %}<p>{{ image.caption }}</p>{% endif %}
+        <div class="project-images">
+            {% if project.images|length > 1 %}
+            <div class="carousel" id="project-{{ project.id }}-carousel">
+                {% for image in project.images %}
+                <div class="carousel-images">
+                    <img src="{{ image.image_url }}" alt="{{ image.caption or project.title }}">
+                    {% if image.caption %}<p>{{ image.caption }}</p>{% endif %}
+                </div>
+                {% endfor %}
+                <div class="carousel-nav">
+                    <button class="prev-btn">❮ Previous</button>
+                    <button class="next-btn">Next ❯</button>
+                </div>
             </div>
+            <script>initCarousel('project-{{ project.id }}-carousel');</script>
+            {% else %}
+            <div class="single-image">
+                <img src="{{ project.images[0].image_url }}" alt="{{ project.images[0].caption or project.title }}">
+                {% if project.images[0].caption %}<p>{{ project.images[0].caption }}</p>{% endif %}
+            </div>
+            {% endif %}
+        </div>
+        {% endif %}
+        
+        {% if project.skills %}
+        <div class="skills-section">
+            <h4>🛠️ Technologies Used:</h4>
+            {% for skill in project.skills %}
+            <span class="skill-tag">{{ skill.name }}</span>
             {% endfor %}
-        {% else %}
-            <p>No images for this project</p>
+        </div>
         {% endif %}
     </div>
-    <hr>
     {% endfor %}
 </section>
 {% endblock %}
