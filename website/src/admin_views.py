@@ -1,5 +1,7 @@
 
 from flask import Blueprint, render_template, request, abort, redirect, url_for
+from werkzeug.utils import secure_filename
+import os
 from .models import Project, Skill, Post, Image, db
 
 admin_views = Blueprint('admin_views', __name__)
@@ -124,3 +126,122 @@ def delete_post(project_title, post_id):
     db.session.delete(post)
     db.session.commit()
     return redirect(url_for("admin_views.admin_open_project_posts", project_title=project.title))
+
+@admin_views.route("/projects/<int:project_id>/skills", methods=['GET', 'POST'])
+@ip_restricted
+def manage_project_skills(project_id):
+    project = Project.query.get_or_404(project_id)
+    all_skills = Skill.query.all()
+    
+    if request.method == 'POST':
+        action = request.form.get('action')
+        
+        if action == 'add_existing':
+            skill_id = request.form.get('skill_id')
+            skill = Skill.query.get(skill_id)
+            if skill and skill not in project.skills:
+                project.skills.append(skill)
+                db.session.commit()
+        
+        elif action == 'create_new':
+            name = request.form.get('name')
+            category = request.form.get('category')
+            icon_url = request.form.get('icon_url')
+            
+            new_skill = Skill(name=name, category=category, icon_url=icon_url)
+            db.session.add(new_skill)
+            project.skills.append(new_skill)
+            db.session.commit()
+        
+        elif action == 'remove':
+            skill_id = request.form.get('skill_id')
+            skill = Skill.query.get(skill_id)
+            if skill in project.skills:
+                project.skills.remove(skill)
+                db.session.commit()
+        
+        return redirect(url_for('admin_views.manage_project_skills', project_id=project.id))
+    
+    return render_template("admin-project-skills.html", project=project, all_skills=all_skills)
+
+@admin_views.route("/projects/<int:project_id>/images", methods=['GET', 'POST'])
+@ip_restricted
+def manage_project_images(project_id):
+    project = Project.query.get_or_404(project_id)
+    
+    if request.method == 'POST':
+        action = request.form.get('action')
+        
+        if action == 'add_url':
+            image_url = request.form.get('image_url')
+            caption = request.form.get('caption')
+            
+            new_image = Image(image_url=image_url, caption=caption, project_id=project.id)
+            db.session.add(new_image)
+            db.session.commit()
+        
+        elif action == 'upload':
+            file = request.files.get('image_file')
+            caption = request.form.get('caption')
+            
+            if file and file.filename:
+                filename = secure_filename(file.filename)
+                file_path = os.path.join('website/static/images', filename)
+                file.save(file_path)
+                
+                image_url = f'/static/images/{filename}'
+                new_image = Image(image_url=image_url, caption=caption, project_id=project.id)
+                db.session.add(new_image)
+                db.session.commit()
+        
+        elif action == 'delete':
+            image_id = request.form.get('image_id')
+            image = Image.query.get(image_id)
+            if image:
+                db.session.delete(image)
+                db.session.commit()
+        
+        return redirect(url_for('admin_views.manage_project_images', project_id=project.id))
+    
+    return render_template("admin-project-images.html", project=project)
+
+@admin_views.route("/posts/<int:post_id>/images", methods=['GET', 'POST'])
+@ip_restricted
+def manage_post_images(post_id):
+    post = Post.query.get_or_404(post_id)
+    
+    if request.method == 'POST':
+        action = request.form.get('action')
+        
+        if action == 'add_url':
+            image_url = request.form.get('image_url')
+            caption = request.form.get('caption')
+            
+            new_image = Image(image_url=image_url, caption=caption, post_id=post.id)
+            db.session.add(new_image)
+            db.session.commit()
+        
+        elif action == 'upload':
+            file = request.files.get('image_file')
+            caption = request.form.get('caption')
+            
+            if file and file.filename:
+                filename = secure_filename(file.filename)
+                file_path = os.path.join('website/static/images', filename)
+                file.save(file_path)
+                
+                image_url = f'/static/images/{filename}'
+                new_image = Image(image_url=image_url, caption=caption, post_id=post.id)
+                db.session.add(new_image)
+                db.session.commit()
+        
+        elif action == 'delete':
+            image_id = request.form.get('image_id')
+            image = Image.query.get(image_id)
+            if image:
+                db.session.delete(image)
+                db.session.commit()
+        
+        return redirect(url_for('admin_views.manage_post_images', post_id=post.id))
+    
+    return render_template("admin-post-images.html", post=post)

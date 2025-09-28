@@ -47,7 +47,7 @@ class Image(db.Model):
     image_url = db.Column(db.String(200), nullable=False)
     caption = db.Column(db.String(200), nullable=True)
 
-    # Fix foreign keys
+    # Foreign keys
     post_id = db.Column(db.Integer, db.ForeignKey('post.id'), nullable=True)
     project_id = db.Column(db.Integer, db.ForeignKey('project.id'), nullable=True)
 

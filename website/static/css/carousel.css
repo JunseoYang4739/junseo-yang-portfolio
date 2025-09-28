@@ -1,0 +1,37 @@
+.carousel {
+    position: relative;
+    max-width: 600px;
+    margin: auto;
+}
+
+.carousel-images {
+    display: none;
+}
+
+.carousel-images.active {
+    display: block;
+}
+
+.carousel-images img {
+    width: 100%;
+    height: auto;
+}
+
+.carousel-nav {
+    text-align: center;
+    margin-top: 10px;
+}
+
+.carousel-nav button {
+    background: #333;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    margin: 0 5px;
+    cursor: pointer;
+    display: inline-block;
+}
+
+.carousel-nav button:hover {
+    background: #555;
+}

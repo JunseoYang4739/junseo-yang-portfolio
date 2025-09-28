@@ -6,6 +6,7 @@
 {% block content %}
 <section>
     <h2>{{ project.title }}</h2>
+    <p>Project ID: {{ project.id }}</p>
     <p>{{ project.description }}</p>
     {% if project.files_url %}
         <p>Files: <a href="{{ project.files_url }}" target="_blank">{{ project.files_url }}</a></p>
@@ -14,19 +15,44 @@
         <p>Live Demo: <a href="{{ project.live_url }}" target="_blank">{{ project.live_url }}</a></p>
     {% endif %}
     
+    <h3>Skills Used</h3>
+    {% for skill in project.skills %}
+    <span>{{ skill.name }} ({{ skill.category }})</span>
+    {% endfor %}
+    
+    <h3>Project Images ({{ project.images|length }} images)</h3>
+    {% if project.images %}
+        {% for image in project.images %}
+        <div>
+            <p>Image ID: {{ image.id }}, Project ID: {{ image.project_id }}</p>
+            <img src="{{ image.image_url }}" alt="{{ image.caption }}" style="max-width: 300px; border: 1px solid red;">
+            {% if image.caption %}<p>Caption: {{ image.caption }}</p>{% endif %}
+        </div>
+        {% endfor %}
+    {% else %}
+        <p>No images found for this project</p>
+    {% endif %}
+    
     <h3>Posts</h3>
+    <a href="{{ url_for('views.project_posts', project_title=project.title) }}">View All Posts</a>
     {% for post in project.posts %}
     <div>
         <h4>{{ post.title }}</h4>
         <p>{{ post.content }}</p>
         <small>{{ post.date }}</small>
+        
+        <h5>Post Images ({{ post.images|length }} images)</h5>
+        {% if post.images %}
+            {% for image in post.images %}
+            <div>
+                <img src="{{ image.image_url }}" alt="{{ image.caption }}" style="max-width: 300px; border: 1px solid blue;">
+                {% if image.caption %}<p>Caption: {{ image.caption }}</p>{% endif %}
+            </div>
+            {% endfor %}
+        {% else %}
+            <p>No post images</p>
+        {% endif %}
     </div>
     {% endfor %}
-    
-    <div>
-        {% for image in project.images %}
-            <img src="{{ image.image_url }}" alt="Project Image" style="max-width: 100%; height: auto;"/>
-        {% endfor %}
-    </div>
 </section>
 {% endblock %}

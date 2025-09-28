@@ -1,0 +1,39 @@
+{% extends "layout.html" %}
+
+{% block title %}Posts for {{ project.title }} | Junseo Yang Portfolio{% endblock %}
+
+{% block content %}
+<section>
+    <h2>Posts for {{ project.title }}</h2>
+    <a href="{{ url_for('views.project', project=project.title) }}">Back to Project</a>
+    
+    {% for post in project.posts %}
+    <div>
+        <h3>{{ post.title }}</h3>
+        <p>{{ post.content }}</p>
+        <small>{{ post.date }}</small>
+        
+        {% if post.images %}
+        {% if post.images|length > 1 %}
+        <div class="carousel" id="post-{{ post.id }}-carousel">
+            {% for image in post.images %}
+            <div class="carousel-images">
+                <img src="{{ image.image_url }}" alt="{{ image.caption }}">
+                {% if image.caption %}<p>{{ image.caption }}</p>{% endif %}
+            </div>
+            {% endfor %}
+            <div class="carousel-nav">
+                <button class="prev-btn">Previous</button>
+                <button class="next-btn">Next</button>
+            </div>
+        </div>
+        <script>initCarousel('post-{{ post.id }}-carousel');</script>
+        {% else %}
+        <img src="{{ post.images[0].image_url }}" alt="{{ post.images[0].caption }}" style="max-width: 100%; height: auto;">
+        {% if post.images[0].caption %}<p>{{ post.images[0].caption }}</p>{% endif %}
+        {% endif %}
+        {% endif %}
+    </div>
+    {% endfor %}
+</section>
+{% endblock %}

@@ -1,0 +1,53 @@
+{% extends "layout.html" %}
+
+{% block title %}Manage Skills for {{ project.title }} | Admin{% endblock %}
+
+{% block content %}
+<div>
+    <h3>Manage Skills for {{ project.title }}</h3>
+    <a href="{{ url_for('admin_views.admin_projects_list') }}">Back to Projects</a>
+    
+    <h4>Current Skills</h4>
+    {% for skill in project.skills %}
+    <div>
+        <span>{{ skill.name }} ({{ skill.category }})</span>
+        <form method="POST" style="display:inline;">
+            <input type="hidden" name="action" value="remove">
+            <input type="hidden" name="skill_id" value="{{ skill.id }}">
+            <button type="submit">Remove</button>
+        </form>
+    </div>
+    {% endfor %}
+    
+    <h4>Add Existing Skill</h4>
+    <form method="POST">
+        <input type="hidden" name="action" value="add_existing">
+        <select name="skill_id">
+            {% for skill in all_skills %}
+                {% if skill not in project.skills %}
+                <option value="{{ skill.id }}">{{ skill.name }} ({{ skill.category }})</option>
+                {% endif %}
+            {% endfor %}
+        </select>
+        <button type="submit">Add Skill</button>
+    </form>
+    
+    <h4>Create New Skill</h4>
+    <form method="POST">
+        <input type="hidden" name="action" value="create_new">
+        <div>
+            <label>Name:</label>
+            <input type="text" name="name" required>
+        </div>
+        <div>
+            <label>Category:</label>
+            <input type="text" name="category" required>
+        </div>
+        <div>
+            <label>Icon URL:</label>
+            <input type="url" name="icon_url" required>
+        </div>
+        <button type="submit">Create and Add Skill</button>
+    </form>
+</div>
+{% endblock %}

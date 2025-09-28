@@ -9,10 +9,16 @@ def home():
 
 @views.route('/projects')
 def projects():
-    return render_template('projects.html')
+    projects = Project.query.all()
+    return render_template('projects.html', projects=projects)
 
 @views.route("/projects/<string:project>")
 def project(project):
     project = Project.query.filter_by(title=project).first_or_404()
     return render_template("project.html", project=project)
+
+@views.route("/projects/<string:project_title>/posts")
+def project_posts(project_title):
+    project = Project.query.filter_by(title=project_title).first_or_404()
+    return render_template("project-posts.html", project=project)
 

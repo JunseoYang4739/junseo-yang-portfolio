@@ -15,6 +15,7 @@
         <p>{{post.content}}</p>
         <small>{{post.date}}</small>
         <a href="{{ url_for('admin_views.edit_post', project_title=project.title, post_id=post.id) }}">Edit</a>
+        <a href="{{ url_for('admin_views.manage_post_images', post_id=post.id) }}">Manage Images</a>
         <form method="POST" action="{{ url_for('admin_views.delete_post', project_title=project.title, post_id=post.id) }}" style="display:inline;">
             <button type="submit" onclick="return confirm('Delete this post?');">Delete</button>
         </form>

@@ -5,6 +5,7 @@
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <title>{% block title %}Junseo Yang Portfolio{% endblock %}</title>
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/carousel.css') }}">
     </head>
 
     <body>
@@ -13,6 +14,7 @@
             <nav>
                 <ul>
                     <li><a href="{{ url_for('views.home') }}">Home</a></li>
+                    <li><a href="{{ url_for('views.projects') }}">Projects</a></li>
                 </ul>
             </nav>
         </header>
@@ -24,5 +26,7 @@
         <footer>
             <p>&copy; 2025 Junseo Yang. All rights reserved.</p>
         </footer>
+        
+        <script src="{{ url_for('static', filename='js/carousel.js') }}"></script>
     </body>
 </html>

@@ -4,13 +4,27 @@
 {% block title %}Projects | Junseo Yang Portfolio{% endblock %}
 
 {% block content %}
-    <section>
-        <h2>My Projects</h2>
-        <p>Here are some of the projects I've worked on:</p>
-        <ul>
-            <li><a href="/projects/project1">Project 1</a> - A brief description of Project 1.</li>
-            <li><a href="/projects/project2">Project 2</a> - A brief description of Project 2.</li>
-            <li><a href="/projects/project3">Project 3</a> - A brief description of Project 3.</li>
-        </ul>
-    </section>
+<section>
+    <h2>My Projects</h2>
+    {% for project in projects %}
+    <div>
+        <h3><a href="{{ url_for('views.project', project=project.title) }}">{{ project.title }}</a></h3>
+        <p>{{ project.description }}</p>
+        <p>Status: {{ project.status }}</p>
+        <p>Project ID: {{ project.id }}, Images: {{ project.images|length }}</p>
+        
+        {% if project.images %}
+            {% for image in project.images %}
+            <div>
+                <img src="{{ image.image_url }}" alt="{{ image.caption }}" style="max-width: 200px; border: 1px solid green;">
+                {% if image.caption %}<p>{{ image.caption }}</p>{% endif %}
+            </div>
+            {% endfor %}
+        {% else %}
+            <p>No images for this project</p>
+        {% endif %}
+    </div>
+    <hr>
+    {% endfor %}
+</section>
 {% endblock %}

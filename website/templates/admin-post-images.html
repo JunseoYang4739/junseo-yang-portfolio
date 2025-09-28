@@ -1,0 +1,51 @@
+{% extends "layout.html" %}
+
+{% block title %}Manage Images for {{ post.title }} | Admin{% endblock %}
+
+{% block content %}
+<div>
+    <h3>Manage Images for {{ post.title }}</h3>
+    <a href="{{ url_for('admin_views.admin_open_project_posts', project_title=post.project.title) }}">Back to Posts</a>
+    
+    <h4>Current Images</h4>
+    {% for image in post.images %}
+    <div>
+        <img src="{{ image.image_url }}" alt="{{ image.caption }}" style="max-width: 200px;">
+        <p>{{ image.caption }}</p>
+        <form method="POST" style="display:inline;">
+            <input type="hidden" name="action" value="delete">
+            <input type="hidden" name="image_id" value="{{ image.id }}">
+            <button type="submit">Delete</button>
+        </form>
+    </div>
+    {% endfor %}
+    
+    <h4>Add Image by URL</h4>
+    <form method="POST">
+        <input type="hidden" name="action" value="add_url">
+        <div>
+            <label>Image URL:</label>
+            <input type="url" name="image_url" required>
+        </div>
+        <div>
+            <label>Caption:</label>
+            <input type="text" name="caption">
+        </div>
+        <button type="submit">Add Image</button>
+    </form>
+    
+    <h4>Upload Image File</h4>
+    <form method="POST" enctype="multipart/form-data">
+        <input type="hidden" name="action" value="upload">
+        <div>
+            <label>Image File:</label>
+            <input type="file" name="image_file" accept="image/*" required>
+        </div>
+        <div>
+            <label>Caption:</label>
+            <input type="text" name="caption">
+        </div>
+        <button type="submit">Upload Image</button>
+    </form>
+</div>
+{% endblock %}
