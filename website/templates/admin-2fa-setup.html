@@ -5,7 +5,52 @@
 {% block content %}
 <section class="admin-section">
     <h2>🔐 Setup Two-Factor Authentication</h2>
-    <p>Scan this QR code with Google Authenticator app:</p>
+    
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert alert-{{ 'success' if category == 'success' else 'error' }}">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+    
+    {% if show_email_form %}
+    <p>Enter your authorized email address to setup 2FA:</p>
+    
+    <form method="POST" class="admin-form">
+        <input type="hidden" name="action" value="verify_email">
+        <div class="form-group">
+            <label for="email">Email Address</label>
+            <input type="email" id="email" name="email" required 
+                   placeholder="Enter your email address">
+        </div>
+        
+        <div class="admin-actions">
+            <button type="submit" class="btn">Send Verification Code</button>
+            <a href="/admin/login" class="btn btn-secondary">Back to Login</a>
+        </div>
+    </form>
+    
+    {% elif show_code_form %}
+    <p>Enter the 6-digit verification code sent to your email:</p>
+    
+    <form method="POST" class="admin-form">
+        <input type="hidden" name="action" value="verify_code">
+        <div class="form-group">
+            <label for="verification_code">Verification Code</label>
+            <input type="text" id="verification_code" name="verification_code" required 
+                   placeholder="Enter 6-digit code" maxlength="6" pattern="[0-9]{6}">
+        </div>
+        
+        <div class="admin-actions">
+            <button type="submit" class="btn">Verify Code</button>
+            <a href="/admin/setup-2fa" class="btn btn-secondary">Back</a>
+        </div>
+    </form>
+    
+    {% else %}
+    
+    <p>✅ Email verified! Scan this QR code with Google Authenticator app:</p>
     
     <div class="qr-code-container">
         <img src="data:image/png;base64,{{ qr_code }}" alt="2FA QR Code" class="qr-code">
@@ -24,13 +69,15 @@
         
         <div class="manual-entry">
             <h4>Manual Entry (if QR doesn't work):</h4>
-            <p><strong>Account:</strong> junseoyang4739@gmail.com</p>
+            <p><strong>Account:</strong> {{ authorized_email }}</p>
             <p><strong>Secret Key:</strong> <code>{{ secret }}</code></p>
         </div>
     </div>
     
     <div class="admin-actions">
-        <a href="{{ url_for('admin_views.admin_login') }}" class="btn">Back to Login</a>
+        <a href="/admin/login" class="btn">Back to Login</a>
     </div>
+    
+    {% endif %}
 </section>
 {% endblock %}

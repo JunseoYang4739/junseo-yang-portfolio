@@ -755,3 +755,8 @@ footer p {
     font-family: monospace;
     color: #dc2626;
 }
+.alert-success {
+    background: rgba(34, 197, 94, 0.1);
+    border-color: #22c55e;
+    color: #22c55e;
+}

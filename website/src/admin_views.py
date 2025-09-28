@@ -1,4 +1,3 @@
-
 from flask import Blueprint, render_template, request, abort, redirect, url_for, session, current_app, flash
 from werkzeug.utils import secure_filename
 import os
@@ -6,11 +5,18 @@ import pyotp
 import qrcode
 from io import BytesIO
 import base64
+import smtplib
+import random
+import string
+import time
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
 from .models import Project, Skill, Post, Image, db
 
 admin_views = Blueprint('admin_views', __name__)
 
 ALLOWED_IPS = {"2001:8003:22f9:aa00:6002:95c6:218e:9434", "58.169.148.47", '127.0.0.1'}
+AUTHORIZED_EMAIL = 'junseoyang4739@gmail.com'
 
 def ip_restricted(f):
     def wrapper(*args, **kwargs):
@@ -24,7 +30,7 @@ def ip_restricted(f):
 def requires_2fa(f):
     def wrapper(*args, **kwargs):
         if not session.get('admin_authenticated'):
-            return redirect(url_for('admin_views.admin_login'))
+            return redirect('/admin/login')
         return f(*args, **kwargs)
     wrapper.__name__ = f.__name__
     return wrapper
@@ -39,19 +45,102 @@ def admin_login():
             totp = pyotp.TOTP(secret)
             if totp.verify(totp_code):
                 session['admin_authenticated'] = True
-                session.permanent = True
+                session.permanent = False  # Don't persist across browser sessions
                 return redirect(url_for('admin_views.admin'))
             else:
                 flash('Invalid 2FA code', 'error')
     
     return render_template('admin-login.html')
 
-@admin_views.route("/setup-2fa")
+def send_verification_email(email, code):
+    """Send verification code to email - you'll need to configure SMTP"""
+    try:
+        # Configure these with your email settings
+        smtp_server = "smtp.gmail.com"
+        smtp_port = 587
+        sender_email = "junseoyang4739@gmail.com"  # Configure this
+        sender_password = "nmbezwexmlizkbjy "  # Change on deployment :D
+        
+        message = MIMEMultipart()
+        message["From"] = sender_email
+        message["To"] = email
+        message["Subject"] = "2FA Setup Verification Code"
+        
+        body = f"""
+        Your verification code for 2FA setup is: {code}
+        
+        This code will expire in 10 minutes.
+        
+        If you didn't request this, please ignore this email.
+        """
+        
+        message.attach(MIMEText(body, "plain"))
+        
+        server = smtplib.SMTP(smtp_server, smtp_port)
+        server.starttls()
+        server.login(sender_email, sender_password)
+        server.sendmail(sender_email, email, message.as_string())
+        server.quit()
+        
+        return True
+    except Exception as e:
+        print(f"Email sending failed: {e}")
+        return False
+
+@admin_views.route("/setup-2fa", methods=['GET', 'POST'])
 @ip_restricted
 def setup_2fa():
+    if request.method == 'POST':
+        action = request.form.get('action')
+        
+        if action == 'verify_email':
+            email = request.form.get('email')
+            if email != AUTHORIZED_EMAIL:
+                flash('Unauthorized email address', 'error')
+                return render_template('admin-2fa-setup.html', show_email_form=True)
+            
+            # Generate verification code
+            verification_code = ''.join(random.choices(string.digits, k=6))
+            session['email_verification_code'] = verification_code
+            session['email_verification_time'] = time.time()
+            
+            # Send email (you'll need to configure SMTP)
+            if send_verification_email(email, verification_code):
+                flash('Verification code sent to your email', 'success')
+                return render_template('admin-2fa-setup.html', show_code_form=True)
+            else:
+                flash('Failed to send verification email', 'error')
+                return render_template('admin-2fa-setup.html', show_email_form=True)
+        
+        elif action == 'verify_code':
+            entered_code = request.form.get('verification_code')
+            stored_code = session.get('email_verification_code')
+            verification_time = session.get('email_verification_time', 0)
+            
+            # Check if code is expired (10 minutes)
+            if time.time() - verification_time > 600:
+                flash('Verification code expired', 'error')
+                session.pop('email_verification_code', None)
+                session.pop('email_verification_time', None)
+                return render_template('admin-2fa-setup.html', show_email_form=True)
+            
+            if entered_code == stored_code:
+                session['email_verified'] = True
+                session.pop('email_verification_code', None)
+                session.pop('email_verification_time', None)
+                # Continue to QR code generation
+            else:
+                flash('Invalid verification code', 'error')
+                return render_template('admin-2fa-setup.html', show_code_form=True)
+    
+    # Check if email is verified
+    if not session.get('email_verified'):
+        return render_template('admin-2fa-setup.html', show_email_form=True)
+    
+    # Generate QR code only after email verification
     secret = current_app.config.get('TOTP_SECRET', 'JBSWY3DPEHPK3PXP')
     totp_uri = pyotp.totp.TOTP(secret).provisioning_uri(
-        name='junseoyang4739@gmail.com',
+        name=AUTHORIZED_EMAIL,
         issuer_name='Junseo Yang Portfolio'
     )
     
@@ -65,7 +154,10 @@ def setup_2fa():
     img.save(buffered)
     img_str = base64.b64encode(buffered.getvalue()).decode()
     
-    return render_template('admin-2fa-setup.html', qr_code=img_str, secret=secret)
+    # Clear email verification after showing QR code
+    session.pop('email_verified', None)
+    
+    return render_template('admin-2fa-setup.html', qr_code=img_str, secret=secret, authorized_email=AUTHORIZED_EMAIL)
 
 @admin_views.route("/logout")
 def admin_logout():
