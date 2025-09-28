@@ -12,16 +12,28 @@
 .carousel-images {
     display: none;
     position: relative;
+    opacity: 0;
+    transform: translateX(30px);
+    transition: opacity 0.4s ease, transform 0.4s ease;
 }
 
-.carousel-images.active {
+.carousel-images:first-child {
     display: block;
-    animation: slideIn 0.5s ease-in-out;
+    opacity: 1;
+    transform: translateX(0);
+}
+
+.carousel-images.slide-in {
+    display: block;
+    opacity: 1;
+    transform: translateX(0);
 }
 
 .carousel-images img {
     width: 100%;
-    height: auto;
+    height: 300px;
+    object-fit: cover;
+    object-position: center;
     display: block;
     border-radius: 0;
 }
@@ -36,40 +48,6 @@
     padding: 1rem;
     margin: 0;
     font-size: 0.9rem;
-}
-
-.carousel-nav {
-    position: absolute;
-    bottom: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    display: flex;
-    gap: 10px;
-    z-index: 10;
-}
-
-.carousel-nav button {
-    background: rgba(220, 38, 38, 0.9);
-    color: white;
-    border: none;
-    padding: 8px 16px;
-    border-radius: 20px;
-    cursor: pointer;
-    font-size: 0.8rem;
-    font-weight: 600;
-    transition: all 0.3s ease;
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-}
-
-.carousel-nav button:hover {
-    background: rgba(220, 38, 38, 1);
-    transform: translateY(-2px);
-    box-shadow: 0 4px 15px rgba(220, 38, 38, 0.4);
-}
-
-.carousel-nav button:active {
-    transform: translateY(0);
 }
 
 /* Arrow buttons on sides */
@@ -89,6 +67,9 @@
     transition: all 0.3s ease;
     z-index: 10;
     backdrop-filter: blur(10px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .carousel-arrow:hover {
@@ -104,6 +85,37 @@
     right: 15px;
 }
 
+/* Dots at bottom */
+.carousel-dots {
+    position: absolute;
+    bottom: 15px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 8px;
+    z-index: 10;
+}
+
+.carousel-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.5);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+}
+
+.carousel-dot:hover {
+    background: rgba(255, 255, 255, 0.8);
+}
+
+.carousel-dot.active {
+    background: #dc2626;
+    border-color: white;
+    transform: scale(1.2);
+}
+
 /* Slide animation */
 @keyframes slideIn {
     from {
@@ -114,31 +126,6 @@
         opacity: 1;
         transform: translateX(0);
     }
-}
-
-/* Indicators */
-.carousel-indicators {
-    position: absolute;
-    bottom: 60px;
-    left: 50%;
-    transform: translateX(-50%);
-    display: flex;
-    gap: 8px;
-    z-index: 10;
-}
-
-.carousel-indicator {
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-    background: rgba(255, 255, 255, 0.5);
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
-
-.carousel-indicator.active {
-    background: #dc2626;
-    transform: scale(1.2);
 }
 
 /* Single image styling */

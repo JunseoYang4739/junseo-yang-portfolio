@@ -1,36 +1,48 @@
 {% extends "layout.html" %}
 
-{% block title %}Create Project{% endblock %}
+{% block title %}Create Project | Admin{% endblock %}
 
 {% block content %}
-
-<h3>Create New Project</h3>
-<form method="POST" class="mb-5">
-    <div class="mb-3">
-    <label class="form-label">Title</label>
-    <input type="text" class="form-control" name="title" required>
-    </div>
-    <div class="mb-3">
-    <label class="form-label">Description</label>
-    <textarea class="form-control" name="description" rows="3" required></textarea>
-    </div>
-    <div class="mb-3">
-    <label class="form-label">Project Files</label>
-    <input type="url" class="form-control" name="files_url">
-    </div>
-    <div class="mb-3">
-    <label class="form-label">Live URL</label>
-    <input type="url" class="form-control" name="live_url">
-    </div>
-    <div class="mb-3">
-    <label class="form-label">Status</label>
-    <select class="form-select" name="status" required>
-        <option value="Planned">Planned</option>
-        <option value="In Progress">In Progress</option>
-        <option value="Completed">Completed</option>
-    </select>
-    </div>
-    <button type="submit" class="btn btn-primary">Create Project</button>
-</form>
-
+<section class="admin-section">
+    <h2>➕ Create New Project</h2>
+    <a href="{{ url_for('admin_views.admin_projects_list') }}" class="btn btn-secondary">← Back to Projects</a>
+    
+    <form method="POST" class="admin-form">
+        <div class="form-group">
+            <label>Project Title</label>
+            <input type="text" name="title" required placeholder="Enter project title">
+        </div>
+        
+        <div class="form-group">
+            <label>Description</label>
+            <textarea name="description" rows="4" required placeholder="Describe your project"></textarea>
+        </div>
+        
+        <div class="form-row">
+            <div class="form-group">
+                <label>Project Files URL</label>
+                <input type="url" name="files_url" placeholder="https://github.com/...">
+            </div>
+            <div class="form-group">
+                <label>Live Demo URL</label>
+                <input type="url" name="live_url" placeholder="https://yourproject.com">
+            </div>
+        </div>
+        
+        <div class="form-group">
+            <label>Status</label>
+            <select name="status" required>
+                <option value="">Select status</option>
+                <option value="Planned">Planned</option>
+                <option value="In Progress">In Progress</option>
+                <option value="Completed">Completed</option>
+            </select>
+        </div>
+        
+        <div class="admin-actions">
+            <button type="submit" class="btn">Create Project</button>
+            <a href="{{ url_for('admin_views.admin_projects_list') }}" class="btn btn-secondary">Cancel</a>
+        </div>
+    </form>
+</section>
 {% endblock %}

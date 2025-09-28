@@ -5,6 +5,35 @@
 {% block content %}
 <section>
     <h2>{{ project.title }}</h2>
+    
+    {% if project.images %}
+    <div class="images-section">
+        {% if project.images|length > 1 %}
+        <div class="carousel" id="project-carousel">
+            {% for image in project.images %}
+            <div class="carousel-images">
+                <img src="{{ image.image_url }}" alt="{{ image.caption or project.title }}" class="fixed-size-image">
+                {% if image.caption %}<p>{{ image.caption }}</p>{% endif %}
+            </div>
+            {% endfor %}
+            <button class="carousel-arrow prev" onclick="changeSlide('project-carousel', -1)">❮</button>
+            <button class="carousel-arrow next" onclick="changeSlide('project-carousel', 1)">❯</button>
+            <div class="carousel-dots"></div>
+        </div>
+        <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            initCarousel('project-carousel');
+        });
+        </script>
+        {% else %}
+        <div class="single-image">
+            <img src="{{ project.images[0].image_url }}" alt="{{ project.images[0].caption or project.title }}" class="fixed-size-image">
+            {% if project.images[0].caption %}<p>{{ project.images[0].caption }}</p>{% endif %}
+        </div>
+        {% endif %}
+    </div>
+    {% endif %}
+    
     <p>{{ project.description }}</p>
     
     <div class="project-links">
@@ -24,44 +53,15 @@
         {% endfor %}
     </div>
     {% endif %}
-    
-    {% if project.images %}
-    <div class="images-section">
-        <h3>📸 Project Gallery</h3>
-        {% if project.images|length > 1 %}
-        <div class="carousel" id="project-carousel">
-            {% for image in project.images %}
-            <div class="carousel-images">
-                <img src="{{ image.image_url }}" alt="{{ image.caption or project.title }}">
-                {% if image.caption %}<p>{{ image.caption }}</p>{% endif %}
-            </div>
-            {% endfor %}
-            <div class="carousel-nav">
-                <button class="prev-btn">❮ Previous</button>
-                <button class="next-btn">Next ❯</button>
-            </div>
-        </div>
-        <script>initCarousel('project-carousel');</script>
-        {% else %}
-        <div class="single-image">
-            <img src="{{ project.images[0].image_url }}" alt="{{ project.images[0].caption or project.title }}">
-            {% if project.images[0].caption %}<p>{{ project.images[0].caption }}</p>{% endif %}
-        </div>
-        {% endif %}
-    </div>
-    {% endif %}
 </section>
 
 {% if project.posts %}
 <section>
     <h3>📝 Project Updates</h3>
-    <a href="{{ url_for('views.project_posts', project_title=project.title) }}" class="btn">View All Posts</a>
     
-    {% for post in project.posts %}
+    {% for post in project.posts|sort(attribute='date', reverse=true) %}
     <div class="project-card">
         <h4>{{ post.title }}</h4>
-        <p>{{ post.content }}</p>
-        <small>📅 {{ post.date.strftime('%B %d, %Y') }}</small>
         
         {% if post.images %}
         <div class="post-images">
@@ -69,24 +69,30 @@
             <div class="carousel" id="post-{{ post.id }}-carousel">
                 {% for image in post.images %}
                 <div class="carousel-images">
-                    <img src="{{ image.image_url }}" alt="{{ image.caption or post.title }}">
+                    <img src="{{ image.image_url }}" alt="{{ image.caption or post.title }}" class="fixed-size-image">
                     {% if image.caption %}<p>{{ image.caption }}</p>{% endif %}
                 </div>
                 {% endfor %}
-                <div class="carousel-nav">
-                    <button class="prev-btn">❮ Previous</button>
-                    <button class="next-btn">Next ❯</button>
-                </div>
+                <button class="carousel-arrow prev" onclick="changeSlide('post-{{ post.id }}-carousel', -1)">❮</button>
+                <button class="carousel-arrow next" onclick="changeSlide('post-{{ post.id }}-carousel', 1)">❯</button>
+                <div class="carousel-dots"></div>
             </div>
-            <script>initCarousel('post-{{ post.id }}-carousel');</script>
+            <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                initCarousel('post-{{ post.id }}-carousel');
+            });
+            </script>
             {% else %}
             <div class="single-image">
-                <img src="{{ post.images[0].image_url }}" alt="{{ post.images[0].caption or post.title }}">
+                <img src="{{ post.images[0].image_url }}" alt="{{ post.images[0].caption or post.title }}" class="fixed-size-image">
                 {% if post.images[0].caption %}<p>{{ post.images[0].caption }}</p>{% endif %}
             </div>
             {% endif %}
         </div>
         {% endif %}
+        
+        <p>{{ post.content }}</p>
+        <small>📅 {{ post.date.strftime('%B %d, %Y') }}</small>
     </div>
     {% endfor %}
 </section>

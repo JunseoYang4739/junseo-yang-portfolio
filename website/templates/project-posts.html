@@ -10,9 +10,6 @@
     {% for post in project.posts %}
     <div>
         <h3>{{ post.title }}</h3>
-        <p>{{ post.content }}</p>
-        <small>{{ post.date }}</small>
-        
         {% if post.images %}
         {% if post.images|length > 1 %}
         <div class="carousel" id="post-{{ post.id }}-carousel">
@@ -33,6 +30,8 @@
         {% if post.images[0].caption %}<p>{{ post.images[0].caption }}</p>{% endif %}
         {% endif %}
         {% endif %}
+        <p>{{ post.content }}</p>
+        <small>{{ post.date }}</small>
     </div>
     {% endfor %}
 </section>

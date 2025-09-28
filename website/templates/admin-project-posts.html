@@ -1,25 +1,42 @@
 
 {% extends "layout.html" %}
 
-{% block title %}Posts for {{project.title}} | Admin View{% endblock %}
+{% block title %}Posts for {{project.title}} | Admin{% endblock %}
 
 {% block content %}
-<div>
-    <h3>Posts for {{project.title}}</h3>
-    <a href="{{ url_for('admin_views.create_post', project_title=project.title) }}">Create New Post</a>
-    <a href="{{ url_for('admin_views.admin_projects_list') }}">Back to Projects</a>
-    
-    {% for post in project.posts %}
-    <div>
-        <h4>{{post.title}}</h4>
-        <p>{{post.content}}</p>
-        <small>{{post.date}}</small>
-        <a href="{{ url_for('admin_views.edit_post', project_title=project.title, post_id=post.id) }}">Edit</a>
-        <a href="{{ url_for('admin_views.manage_post_images', post_id=post.id) }}">Manage Images</a>
-        <form method="POST" action="{{ url_for('admin_views.delete_post', project_title=project.title, post_id=post.id) }}" style="display:inline;">
-            <button type="submit" onclick="return confirm('Delete this post?');">Delete</button>
-        </form>
+<section class="admin-section">
+    <h2>📝 Posts for {{project.title}}</h2>
+    <div class="admin-actions">
+        <a href="{{ url_for('admin_views.create_post', project_title=project.title) }}" class="btn">➕ Create New Post</a>
+        <a href="{{ url_for('admin_views.admin_projects_list') }}" class="btn btn-secondary">← Back to Projects</a>
     </div>
-    {% endfor %}
-</div>
+    
+    {% if project.posts %}
+        {% for post in project.posts %}
+        <div class="project-card admin-project-card">
+            <div class="project-header">
+                <h3>{{post.title}}</h3>
+                <small>📅 {{post.date.strftime('%B %d, %Y')}}</small>
+            </div>
+            <p>{{post.content}}</p>
+            
+            <div class="project-stats">
+                <span>📸 {{ post.images|length }} images</span>
+            </div>
+            
+            <div class="admin-actions">
+                <a href="{{ url_for('admin_views.edit_post', project_title=project.title, post_id=post.id) }}" class="btn btn-small">Edit</a>
+                <a href="{{ url_for('admin_views.manage_post_images', post_id=post.id) }}" class="btn btn-small">Images</a>
+                <form method="POST" action="{{ url_for('admin_views.delete_post', project_title=project.title, post_id=post.id) }}" style="display:inline;" onsubmit="return confirm('⚠️ Delete this post?\n\nThis will also delete all associated images. This action cannot be undone.');">
+                    <button type="submit" class="btn btn-small btn-danger">Delete</button>
+                </form>
+            </div>
+        </div>
+        {% endfor %}
+    {% else %}
+        <div class="project-card">
+            <p>No posts yet. <a href="{{ url_for('admin_views.create_post', project_title=project.title) }}">Create the first post</a>.</p>
+        </div>
+    {% endif %}
+</section>
 {% endblock %}

@@ -8,11 +8,37 @@
     <h2>🚀 My Projects</h2>
     <p>Here are some of the exciting projects I've been working on:</p>
     
+    <div class="sorting-controls">
+        <div class="sort-group">
+            <label for="sort-select">Sort by:</label>
+            <select id="sort-select" onchange="updateSort()">
+                <option value="default" {% if current_sort == 'default' %}selected{% endif %}>Project Name</option>
+                <option value="latest_post" {% if current_sort == 'latest_post' %}selected{% endif %}>Latest Post</option>
+                <option value="skill" {% if current_sort == 'skill' %}selected{% endif %}>Skill</option>
+            </select>
+        </div>
+        
+        <div class="filter-group">
+            <label for="skill-filter">Filter by skill:</label>
+            <select id="skill-filter" onchange="updateSort()">
+                <option value="">All Skills</option>
+                {% for skill in all_skills %}
+                <option value="{{ skill.name }}" {% if current_skill == skill.name %}selected{% endif %}>{{ skill.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+    </div>
+    
     {% for project in projects %}
     <div class="project-card">
         <h3><a href="{{ url_for('views.project', project=project.title) }}">{{ project.title }}</a></h3>
         <p>{{ project.description }}</p>
         <p><strong>Status:</strong> <span class="status-{{ project.status.lower().replace(' ', '-') }}">{{ project.status }}</span></p>
+        
+        {% if project.posts %}
+        {% set latest_post = project.posts|sort(attribute='date', reverse=true)|first %}
+        <p><small>Latest post: {{ latest_post.date.strftime('%B %d, %Y') }}</small></p>
+        {% endif %}
         
         {% if project.images %}
         <div class="project-images">
@@ -50,4 +76,19 @@
     </div>
     {% endfor %}
 </section>
+
+<script>
+function updateSort() {
+    const sortBy = document.getElementById('sort-select').value;
+    const skillFilter = document.getElementById('skill-filter').value;
+    
+    const params = new URLSearchParams();
+    if (sortBy !== 'default') params.set('sort', sortBy);
+    if (skillFilter) params.set('skill', skillFilter);
+    
+    const queryString = params.toString();
+    const newUrl = window.location.pathname + (queryString ? '?' + queryString : '');
+    window.location.href = newUrl;
+}
+</script>
 {% endblock %}
