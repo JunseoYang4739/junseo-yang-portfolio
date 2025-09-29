@@ -1,6 +1,9 @@
 from flask import Blueprint, render_template, request, make_response
 from sqlalchemy import desc
 from .models import Project, Skill, Post, Image, db
+from dotenv import load_dotenv
+
+load_dotenv()
 
 views = Blueprint('views', __name__)
 

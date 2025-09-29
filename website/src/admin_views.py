@@ -13,6 +13,9 @@ from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from .models import Project, Skill, Post, Image, db
 from .s3_utils import upload_file_to_s3
+from dotenv import load_dotenv
+
+load_dotenv()
 
 admin_views = Blueprint('admin_views', __name__)
 

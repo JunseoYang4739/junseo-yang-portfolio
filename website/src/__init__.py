@@ -3,6 +3,9 @@ from flask_wtf.csrf import CSRFProtect
 import pyotp
 import os
 from flask import redirect
+from dotenv import load_dotenv
+
+load_dotenv()
 
 def create_app():
     app = Flask(__name__, 

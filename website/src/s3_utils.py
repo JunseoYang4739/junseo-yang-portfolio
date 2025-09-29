@@ -3,6 +3,9 @@ from botocore.exceptions import ClientError
 from flask import current_app
 import uuid
 import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 def get_s3_client():
     return boto3.client(
