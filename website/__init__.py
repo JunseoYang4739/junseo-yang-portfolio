@@ -12,6 +12,8 @@ def create_app(config_name=None):
     if config_name is None:
         config_name = os.environ.get('FLASK_ENV', 'development')
     
+    import sys
+    sys.path.append(os.path.dirname(os.path.dirname(__file__)))
     from config import config
     app.config.from_object(config[config_name])
     
