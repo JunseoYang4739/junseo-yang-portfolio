@@ -54,12 +54,6 @@ def create_app(config_name=None):
         response.headers['Server'] = 'WebServer'
         
         return response
-    
-    # Force HTTPS in production
-    @app.before_request
-    def force_https():
-        if not request.is_secure and not app.debug:
-            return redirect(request.url.replace('http://', 'https://'), code=301)
 
     from website.src.views import views
     from website.src.admin_views import admin_views

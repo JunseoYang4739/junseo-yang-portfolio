@@ -40,16 +40,7 @@ def create_app():
         response.headers['X-XSS-Protection'] = '1; mode=block'
         response.headers['Referrer-Policy'] = 'strict-origin-when-cross-origin'
         
-        # HTTPS enforcement
-        response.headers['Strict-Transport-Security'] = 'max-age=31536000; includeSubDomains'
-        
         return response
-    
-    # Force HTTPS in production
-    @app.before_request
-    def force_https():
-        if not request.is_secure and app.env != 'development':
-            return redirect(request.url.replace('http://', 'https://'), code=301)
     
     # Register blueprints
     from .views import views
