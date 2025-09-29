@@ -16,7 +16,7 @@ from .s3_utils import upload_file_to_s3
 from dotenv import load_dotenv
 from pathlib import Path
 
-env_path = Path("/home/junseoyang/Documents/junseo-yang-portfolio/junseo-yang-portfolio/.env") 
+env_path = Path("/home/ec2-user/junseo-yang-portfolio/.env") 
 load_dotenv(dotenv_path=env_path)
 
 admin_views = Blueprint('admin_views', __name__)
