@@ -4,8 +4,10 @@ from flask import current_app
 import uuid
 import os
 from dotenv import load_dotenv
+from pathlib import Path
 
-load_dotenv()
+env_path = Path("/home/junseoyang/Documents/junseo-yang-portfolio/junseo-yang-portfolio/.env") 
+load_dotenv(dotenv_path=env_path)
 
 def get_s3_client():
     return boto3.client(

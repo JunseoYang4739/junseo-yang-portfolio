@@ -4,8 +4,10 @@ import pyotp
 import os
 from flask import redirect
 from dotenv import load_dotenv
+from pathlib import Path
 
-load_dotenv()
+env_path = Path("/home/junseoyang/Documents/junseo-yang-portfolio/junseo-yang-portfolio/.env") 
+load_dotenv(dotenv_path=env_path)
 
 def create_app():
     app = Flask(__name__, 

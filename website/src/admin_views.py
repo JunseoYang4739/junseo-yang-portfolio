@@ -14,8 +14,10 @@ from email.mime.multipart import MIMEMultipart
 from .models import Project, Skill, Post, Image, db
 from .s3_utils import upload_file_to_s3
 from dotenv import load_dotenv
+from pathlib import Path
 
-load_dotenv()
+env_path = Path("/home/junseoyang/Documents/junseo-yang-portfolio/junseo-yang-portfolio/.env") 
+load_dotenv(dotenv_path=env_path)
 
 admin_views = Blueprint('admin_views', __name__)
 

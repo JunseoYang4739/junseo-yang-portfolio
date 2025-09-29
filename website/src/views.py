@@ -2,8 +2,10 @@ from flask import Blueprint, render_template, request, make_response
 from sqlalchemy import desc
 from .models import Project, Skill, Post, Image, db
 from dotenv import load_dotenv
+from pathlib import Path
 
-load_dotenv()
+env_path = Path("/home/junseoyang/Documents/junseo-yang-portfolio/junseo-yang-portfolio/.env") 
+load_dotenv(dotenv_path=env_path)
 
 views = Blueprint('views', __name__)
 
