@@ -12,11 +12,12 @@ import time
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from .models import Project, Skill, Post, Image, db
+from .s3_utils import upload_file_to_s3
 
 admin_views = Blueprint('admin_views', __name__)
 
-ALLOWED_IPS = {"2001:8003:22f9:aa00:6002:95c6:218e:9434", "58.169.148.47", '127.0.0.1'}
-AUTHORIZED_EMAIL = 'junseoyang4739@gmail.com'
+ALLOWED_IPS = set(os.environ.get('ALLOWED_IPS').split(','))
+AUTHORIZED_EMAIL = os.environ.get('AUTHORIZED_EMAIL', 'junseoyang4739@gmail.com')
 
 def ip_restricted(f):
     def wrapper(*args, **kwargs):
@@ -59,7 +60,7 @@ def send_verification_email(email, code):
         smtp_server = "smtp.gmail.com"
         smtp_port = 587
         sender_email = "junseoyang4739@gmail.com"  # Configure this
-        sender_password = "nmbezwexmlizkbjy "  # Change on deployment :D
+        sender_password = os.environ.get('EMAIL_PASSWORD')  # Change on deployment :D
         
         message = MIMEMultipart()
         message["From"] = sender_email
@@ -361,29 +362,22 @@ def manage_project_images(project_id):
             caption = request.form.get('caption')
             
             if file and file.filename:
-                # Secure filename to prevent path traversal
-                filename = secure_filename(file.filename)
-                
-                # Additional security: only allow image extensions
+                # Security check for file extensions
                 allowed_extensions = {'.jpg', '.jpeg', '.png', '.gif', '.webp'}
-                file_ext = os.path.splitext(filename)[1].lower()
+                file_ext = os.path.splitext(file.filename)[1].lower()
                 
                 if file_ext not in allowed_extensions:
                     flash('Invalid file type. Only images allowed.', 'error')
                     return redirect(url_for('admin_views.manage_project_images', project_id=project.id))
                 
-                # Ensure uploads directory exists
-                upload_dir = os.path.join('website', 'static', 'images')
-                os.makedirs(upload_dir, exist_ok=True)
-                
-                # Save with secure path
-                file_path = os.path.join(upload_dir, filename)
-                file.save(file_path)
-                
-                image_url = f'/static/images/{filename}'
-                new_image = Image(image_url=image_url, caption=caption, project_id=project.id)
-                db.session.add(new_image)
-                db.session.commit()
+                # Upload to S3
+                image_url = upload_file_to_s3(file)
+                if image_url:
+                    new_image = Image(image_url=image_url, caption=caption, project_id=project.id)
+                    db.session.add(new_image)
+                    db.session.commit()
+                else:
+                    flash('Failed to upload image', 'error')
         
         elif action == 'delete':
             image_id = request.form.get('image_id')

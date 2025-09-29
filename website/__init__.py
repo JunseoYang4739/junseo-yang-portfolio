@@ -1,14 +1,20 @@
 from flask import Flask, request, redirect
 from flask_sqlalchemy import SQLAlchemy
+import os
 
 db = SQLAlchemy()
 DB_NAME = "database.db"
 
-def create_app():
+def create_app(config_name=None):
     app = Flask(__name__)
-    app.config['SECRET_KEY'] = 'secret-key-goes-here'
-    app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{DB_NAME}'
-    app.config['TOTP_SECRET'] = 'JBSWY3DPEHPK3PXP'  # 2FA secret
+    
+    # Load configuration
+    if config_name is None:
+        config_name = os.environ.get('FLASK_ENV', 'development')
+    
+    from config import config
+    app.config.from_object(config[config_name])
+    
     db.init_app(app)
 
     # Security headers middleware
