@@ -13,9 +13,10 @@ def create_app():
     app = Flask(__name__, 
                 template_folder='../templates',
                 static_folder='../static')
-    app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY')  # Change this in production
+    app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY') 
     app.config['TOTP_SECRET'] = os.environ.get('TOTP_SECRET')
     app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('SQLALCHEMY_DATABASE_URI')
+    app.config['PREFERRED_URL_SCHEME'] = 'http'
     
     # Initialize CSRF protection
     csrf = CSRFProtect(app)

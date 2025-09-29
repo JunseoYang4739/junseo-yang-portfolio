@@ -17,6 +17,8 @@ def create_app(config_name=None):
     if config_name is None:
         config_name = os.environ.get('FLASK_ENV', 'development')
     
+    app.config['PREFERRED_URL_SCHEME'] = 'http'
+    
     import sys
     sys.path.append(os.path.dirname(os.path.dirname(__file__)))
     from config import config

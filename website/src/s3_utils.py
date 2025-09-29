@@ -31,7 +31,7 @@ def upload_file_to_s3(file, filename=None):
             filename,
             ExtraArgs={'ACL': 'public-read'}
         )
-        return f"https://{bucket}.s3.{region}.amazonaws.com/{filename}"
+        return f"http://{bucket}.s3.{region}.amazonaws.com/{filename}"
     except ClientError as e:
         print(f"Error uploading to S3: {e}")
         return None
