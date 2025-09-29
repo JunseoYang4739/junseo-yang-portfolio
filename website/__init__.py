@@ -40,8 +40,7 @@ def create_app(config_name=None):
             "object-src 'none'; "
             "base-uri 'self'; "
             "form-action 'self'; "
-            "frame-ancestors 'none'; "
-            "upgrade-insecure-requests"
+            "frame-ancestors 'none'"
         )
         
         # Clickjacking protection (multiple headers for compatibility)
@@ -49,7 +48,6 @@ def create_app(config_name=None):
         response.headers['X-Content-Type-Options'] = 'nosniff'
         response.headers['X-XSS-Protection'] = '1; mode=block'
         response.headers['Referrer-Policy'] = 'strict-origin-when-cross-origin'
-        response.headers['Strict-Transport-Security'] = 'max-age=31536000; includeSubDomains; preload'
         response.headers['Permissions-Policy'] = 'geolocation=(), microphone=(), camera=()'
         
         # Hide server version information
