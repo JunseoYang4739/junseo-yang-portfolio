@@ -21,7 +21,7 @@ load_dotenv(dotenv_path=env_path)
 
 admin_views = Blueprint('admin_views', __name__)
 
-ALLOWED_IPS = set(os.environ.get('ALLOWED_IPS').split(','))
+ALLOWED_IPS = set(os.environ.get('ALLOWED_IPS'))
 AUTHORIZED_EMAIL = os.environ.get('AUTHORIZED_EMAIL', 'junseoyang4739@gmail.com')
 
 def ip_restricted(f):
